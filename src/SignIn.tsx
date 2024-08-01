@@ -33,9 +33,11 @@ export default function SignIn() {
             alignItems: "center",
           }}
         >
-          <Typography component="h1" variant="h5">
-            <h1>Добро пожаловать!</h1> 
-            <p>Чтобы войти в свой аккаунт, введите ваши учетные данные, пожалуйста.</p>
+          <Typography variant="h3" gutterBottom>
+            Добро пожаловать!
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Чтобы войти в свой аккаунт, введите ваши учетные данные. 
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -82,12 +84,3 @@ export default function SignIn() {
       </Container>
     );
   }
-
-/*function Authorization() {
-return {
-
-}
-
-}
-
-export default Authorization;*/
