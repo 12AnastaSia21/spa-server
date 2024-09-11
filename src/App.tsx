@@ -1,17 +1,21 @@
 import './App.css'
-//import SignIn from './SignIn'
-import FullFeaturedCrudGrid from './DataTable'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import SignIn from './SignIn';
+import FullFeaturedCrudGrid from './DataTable';
 
 function App() {
  
 
   return (
-    <>
-      <div><FullFeaturedCrudGrid /></div>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<SignIn />} />
+        <Route path="/table" element={<FullFeaturedCrudGrid />} />
+      </Routes>
+    </Router>
   )
 }
 
-//<div><SignIn /></div>
+
 
 export default App

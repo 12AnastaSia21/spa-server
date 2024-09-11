@@ -7,19 +7,53 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function SignIn() {
-    const handleSubmit = (event: any) => {
-      event.preventDefault();
-      const data = new FormData(event.currentTarget);
-      console.log({
-        email: data.get("email"),
-        password: data.get("password"),
-      });
+  const [errorState, setErrorState] = useState<null | string>(null);
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+
+    const username = email;
+
+    const payload = {
+      username,
+      password,
     };
+
+    await axios
+      .post(
+        "https://test.v5.pryaniky.com/ru/data/v3/testmethods/docs/login",
+        payload
+      )
+      .then((response) => {
+        if (response.data.error_code) {
+          if (response.data.error_code === 2004) {
+            setErrorState("Ошибка авторизации");
+          }
   
-    return (
+          console.error("Login error:", response.data);
+
+          return;
+        }
+
+        console.log("Login successful:", response.data);
+        if (response.data.data) {
+          navigate("/table");
+        }
+      })
+  };
+
+  return (
       <Container component="main" maxWidth="sm">
         <Box
           sx={{
@@ -37,9 +71,14 @@ export default function SignIn() {
             Добро пожаловать!
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
-            Чтобы войти в свой аккаунт, введите ваши учетные данные. 
+            Чтобы войти в свой аккаунт, введите ваши учетные данные.
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required
@@ -64,6 +103,11 @@ export default function SignIn() {
               control={<Checkbox value="remember" color="primary" />}
               label="Запомнить меня"
             />
+            {errorState && (
+              <Typography variant="subtitle1" color="error" gutterBottom>
+                {errorState}
+              </Typography>
+            )}
             <Button
               type="submit"
               fullWidth
@@ -82,5 +126,5 @@ export default function SignIn() {
           </Box>
         </Box>
       </Container>
-    );
-  }
+  );
+}
