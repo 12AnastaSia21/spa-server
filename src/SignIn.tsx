@@ -10,12 +10,14 @@ import Container from "@mui/material/Container";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth  } from "./TokenContext";
 
 export default function SignIn() {
   const [errorState, setErrorState] = useState<null | string>(null);
-
+  const { login } = useAuth();
   const navigate = useNavigate();
 
+  
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -48,6 +50,7 @@ export default function SignIn() {
 
         console.log("Login successful:", response.data);
         if (response.data.data) {
+          login(response.data.data.token);
           navigate("/table");
         }
       })
@@ -128,3 +131,11 @@ export default function SignIn() {
       </Container>
   );
 }
+
+
+
+
+
+
+   
+

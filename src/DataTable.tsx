@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useEffect } from "react";
+import axios from "axios";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,94 +22,8 @@ import {
   GridRowEditStopReasons,
   GridSlots,
 } from "@mui/x-data-grid";
-import {
-  randomId,
-} from "@mui/x-data-grid-generator";
-
-//const roles = ['Market', 'Finance', 'Development'];
-//const randomRole = () => {
-//    return randomArrayItem(roles);
-//};
-
-const initialRows: GridRowsProp = [
-  {
-    id: randomId(),
-    companySigDate: 676,
-    companySignatureName: "ffj",
-    documentName: "randomCreatedDate",
-    documentStatus: "ddddd",
-    documentType: "sss",
-    employeeNumber: 11,
-    employeeSigDate: 99,
-    employeeSignatureName: "jk",
-  },
-  {
-    id: randomId(),
-    companySigDate: 8865,
-    companySignatureName: "ffj",
-    documentName: "randomCreatedDate",
-    documentStatus: "ddddd",
-    documentType: "sss",
-    employeeNumber: 11,
-    employeeSigDate: 99,
-    employeeSignatureName: "jk",
-  },
-  {
-    id: randomId(),
-    companySigDate: 3563,
-    companySignatureName: "ffj",
-    documentName: "randomCreatedDate",
-    documentStatus: "ddddd",
-    documentType: "sss",
-    employeeNumber: 11,
-    employeeSigDate: 99,
-    employeeSignatureName: "jk",
-  },
-  {
-    id: randomId(),
-    companySigDate: 635,
-    companySignatureName: "ffj",
-    documentName: "randomCreatedDate",
-    documentStatus: "ddddd",
-    documentType: "sss",
-    employeeNumber: 11,
-    employeeSigDate: 99,
-    employeeSignatureName: "jk",
-  },
-  {
-    id: randomId(),
-    companySigDate: 326,
-    companySignatureName: "ffj",
-    documentName: "randomCreatedDate",
-    documentStatus: "ddddd",
-    documentType: "sss",
-    employeeNumber: 11,
-    employeeSigDate: 99,
-    employeeSignatureName: "jk",
-  },
-  {
-    id: randomId(),
-    companySigDate: 2562,
-    companySignatureName: "ffj",
-    documentName: "randomCreatedDate",
-    documentStatus: "ddddd",
-    documentType: "sss",
-    employeeNumber: 11,
-    employeeSigDate: 99,
-    employeeSignatureName: "jk",
-  },
-  {
-    id: randomId(),
-    companySigDate: 2626,
-    companySignatureName: "ffj",
-    documentName: "randomCreatedDate",
-    documentStatus: "ddddd",
-    documentType: "sss",
-    employeeNumber: 11,
-    employeeSigDate: 99,
-    employeeSignatureName: "jk",
-  },
-];
+import { randomId } from "@mui/x-data-grid-generator";
+import { useAuth } from "./TokenContext";
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => any;
@@ -138,10 +54,34 @@ function EditToolbar(props: EditToolbarProps) {
 }
 
 export default function FullFeaturedCrudGrid() {
-  const [rows, setRows] = React.useState(initialRows);
+  const [rows, setRows] = React.useState<GridRowsProp>([]);
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
   );
+  const { authToken } = useAuth();
+
+  useEffect(() => {
+    if (!authToken) {
+      console.error("No auth token found!");
+      return;
+    }
+    axios
+      .get(
+        "https://test.v5.pryaniky.com/ru/data/v3/testmethods/docs/userdocs/get",
+        {
+          headers: {
+            "x-auth": authToken,
+          },
+        }
+      )
+      .then((response) => {
+        setRows(response.data.data);
+        console.log("Data fetched:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, [authToken]);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (
     params,
@@ -153,16 +93,16 @@ export default function FullFeaturedCrudGrid() {
   };
 
   const handleEditClick = (id: GridRowId) => () => {
-        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-    };
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+};
 
   const handleSaveClick = (id: GridRowId) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-   const handleDeleteClick = (id: GridRowId) => () => {
-        setRows(rows.filter((row) => row.id !== id));
-    };
+  const handleDeleteClick = (id: GridRowId) => () => {
+    setRows(rows.filter((row) => row.id !== id));
+};
 
   const handleCancelClick = (id: GridRowId) => () => {
     setRowModesModel({
@@ -170,17 +110,17 @@ export default function FullFeaturedCrudGrid() {
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
 
-     const editedRow = rows.find((row) => row.id === id);
-            if (editedRow!.isNew) {
-                setRows(rows.filter((row) => row.id !== id));
-            }
-  };
+    const editedRow = rows.find((row) => row.id === id);
+    if (editedRow!.isNew) {
+        setRows(rows.filter((row) => row.id !== id));
+    }
+};
 
   const processRowUpdate = (newRow: GridRowModel) => {
-            const updatedRow = { ...newRow, isNew: false };
-            setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-            return updatedRow;
-        };
+    const updatedRow = { ...newRow, isNew: false };
+    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+    return updatedRow;
+};
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
@@ -190,8 +130,9 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "companySigDate",
       headerName: "Дата создания компании",
-      type: "number",
-      flex: 11.1,
+      flex: 12,
+      valueGetter: (params) => new Date(params).toISOString(),
+      type: "string",
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -199,8 +140,7 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "companySignatureName",
       headerName: "Название компании",
-      type: "string",
-      flex: 11.1,
+      flex: 12,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -208,8 +148,7 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "documentName",
       headerName: "Название документа",
-      type: "string",
-      flex: 11.1,
+      flex: 12,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -217,8 +156,7 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "documentStatus",
       headerName: "Статус документа",
-      type: "string",
-      flex: 11.1,
+      flex: 12,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -226,8 +164,7 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "documentType",
       headerName: "Тип документа",
-      type: "string",
-      flex: 11.1,
+      flex: 12,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -235,8 +172,7 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "employeeNumber",
       headerName: "Номер сотрудника",
-      type: "number",
-      flex: 11.1,
+      flex: 12,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -244,8 +180,9 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "employeeSigDate",
       headerName: "Дата регистрации сотрудника",
-      type: "number",
-      flex: 11.1,
+      valueGetter: (params) => new Date(params).toISOString(),
+      type: "string",
+      flex: 12,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -253,8 +190,7 @@ export default function FullFeaturedCrudGrid() {
     {
       field: "employeeSignatureName",
       headerName: "Подпись сотрудника",
-      type: "string",
-      flex: 11.1,
+      flex: 12,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -263,7 +199,7 @@ export default function FullFeaturedCrudGrid() {
       field: "actions",
       type: "actions",
       headerName: "Действие",
-      flex: 11.1,
+      flex: 4,
       align: "left",
       headerAlign: "left",
       cellClassName: "actions",
@@ -275,9 +211,7 @@ export default function FullFeaturedCrudGrid() {
             <GridActionsCellItem
               icon={<SaveIcon />}
               label="Save"
-              sx={{
-                color: "primary.main",
-              }}
+              sx={{ color: "primary.main" }}
               onClick={handleSaveClick(id)}
             />,
             <GridActionsCellItem
@@ -312,14 +246,10 @@ export default function FullFeaturedCrudGrid() {
   return (
     <Box
       sx={{
-        height: 500,
+        height: "100vh",
         width: "100%",
-        "& .actions": {
-          color: "text.secondary",
-        },
-        "& .textPrimary": {
-          color: "text.primary",
-        },
+        "& .actions": { color: "text.secondary" },
+        "& .textPrimary": { color: "text.primary" },
       }}
     >
       <DataGrid
@@ -330,12 +260,8 @@ export default function FullFeaturedCrudGrid() {
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
-        slots={{
-          toolbar: EditToolbar as GridSlots["toolbar"],
-        }}
-        slotProps={{
-              toolbar: { setRows, setRowModesModel },
-        }}
+        slots={{ toolbar: EditToolbar as GridSlots["toolbar"] }}
+        slotProps={{ toolbar: { setRows, setRowModesModel } }}
       />
     </Box>
   );
