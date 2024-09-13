@@ -37,17 +37,17 @@ function EditToolbar(props: EditToolbarProps) {
 
   const handleClick = () => {
     const id = randomId();
-    setRows((oldRows) => [...oldRows, { id, name: "", age: "", isNew: true }]);
+    setRows((oldRows) => [...oldRows, { id, companySigDate: "", isNew: true }]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "companySigDate" },
     }));
   };
 
   return (
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add record
+        Добавит запись
       </Button>
     </GridToolbarContainer>
   );

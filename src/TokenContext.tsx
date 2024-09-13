@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 interface TokenContextType {
   authToken: string | null;
@@ -18,6 +18,21 @@ export const TokenProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     setAuthToken(null); 
   };
+
+  useEffect(() => {
+    const token = window.localStorage.getItem('authToken');
+    if (token) {
+      setAuthToken(token); 
+    }
+  }, []);
+
+  useEffect(() => {
+    if (authToken) {
+      window.localStorage.setItem('authToken', authToken); 
+    } else {
+      window.localStorage.removeItem('authToken'); 
+    }
+  }, [authToken]);
 
   return (
     <TokenContext.Provider value={{ authToken, login, logout }}>
