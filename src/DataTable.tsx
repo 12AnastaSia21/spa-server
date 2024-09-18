@@ -24,6 +24,7 @@ import {
 } from "@mui/x-data-grid";
 import { randomId } from "@mui/x-data-grid-generator";
 import { useAuth } from "./TokenContext";
+import "./DataTable.css"
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => any;
@@ -53,7 +54,7 @@ function EditToolbar(props: EditToolbarProps) {
   );
 }
 
-export default function FullFeaturedCrudGrid() {
+export default function DataTable() {
   const [rows, setRows] = React.useState<GridRowsProp>([]);
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
@@ -244,10 +245,8 @@ export default function FullFeaturedCrudGrid() {
   ];
 
   return (
-    <Box
+    <Box className ="table"
       sx={{
-        height: "100vh",
-        width: "100%",
         "& .actions": { color: "text.secondary" },
         "& .textPrimary": { color: "text.primary" },
       }}

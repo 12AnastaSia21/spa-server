@@ -1,36 +1,38 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from "react";
 
-interface TokenContextType {
+export interface TokenContextType {
   authToken: string | null;
   login: (token: string) => void;
   logout: () => void;
 }
 
-const TokenContext = createContext<TokenContextType | undefined>(undefined);
+export const TokenContext = createContext<TokenContextType | undefined>(
+  undefined
+);
 
-export const TokenProvider = ({ children }: { children: React.ReactNode }) => {
+const TokenProvider = ({ children }: { children: React.ReactNode }) => {
   const [authToken, setAuthToken] = useState<string | null>(null);
 
   const login = (token: string) => {
-    setAuthToken(token); 
+    setAuthToken(token);
   };
 
   const logout = () => {
-    setAuthToken(null); 
+    setAuthToken(null);
   };
 
   useEffect(() => {
-    const token = window.localStorage.getItem('authToken');
+    const token = window.localStorage.getItem("authToken");
     if (token) {
-      setAuthToken(token); 
+      setAuthToken(token);
     }
   }, []);
 
   useEffect(() => {
     if (authToken) {
-      window.localStorage.setItem('authToken', authToken); 
+      window.localStorage.setItem("authToken", authToken);
     } else {
-      window.localStorage.removeItem('authToken'); 
+      window.localStorage.removeItem("authToken");
     }
   }, [authToken]);
 
@@ -41,14 +43,14 @@ export const TokenProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-
 export const useAuth = () => {
   const context = useContext(TokenContext);
 
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
 
   return context;
 };
 
+export default TokenProvider;
