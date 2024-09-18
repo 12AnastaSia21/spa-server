@@ -1,7 +1,8 @@
 .main-page {
     display: flex;
     flex-direction: column;
-    padding-right: 1rem;
-    padding-left: 1rem;
     min-height: 100vh;
-};
+  }
+  
+  
+ 

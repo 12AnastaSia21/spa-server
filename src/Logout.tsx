@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./TokenContext";
 import Button from "@mui/material/Button";
-import "./Logout.css";
+import "./Logout.css"
 
 export default function Logout() {
     const navigate = useNavigate();

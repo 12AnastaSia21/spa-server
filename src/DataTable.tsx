@@ -24,7 +24,7 @@ import {
 } from "@mui/x-data-grid";
 import { randomId } from "@mui/x-data-grid-generator";
 import { useAuth } from "./TokenContext";
-import "./DataTable.css"
+import "./DataTable.css";
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => any;
@@ -95,7 +95,7 @@ export default function DataTable() {
 
   const handleEditClick = (id: GridRowId) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-};
+  };
 
   const handleSaveClick = (id: GridRowId) => () => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
@@ -103,7 +103,7 @@ export default function DataTable() {
 
   const handleDeleteClick = (id: GridRowId) => () => {
     setRows(rows.filter((row) => row.id !== id));
-};
+  };
 
   const handleCancelClick = (id: GridRowId) => () => {
     setRowModesModel({
@@ -113,15 +113,15 @@ export default function DataTable() {
 
     const editedRow = rows.find((row) => row.id === id);
     if (editedRow!.isNew) {
-        setRows(rows.filter((row) => row.id !== id));
+      setRows(rows.filter((row) => row.id !== id));
     }
-};
+  };
 
   const processRowUpdate = (newRow: GridRowModel) => {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
-};
+  };
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
@@ -245,13 +245,17 @@ export default function DataTable() {
   ];
 
   return (
-    <Box className ="table"
+    <Box
+      className="table"
       sx={{
         "& .actions": { color: "text.secondary" },
         "& .textPrimary": { color: "text.primary" },
       }}
     >
       <DataGrid
+        initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+        pagination
+        pageSizeOptions={[10, 15, 20, 50, 100]}
         rows={rows}
         columns={columns}
         editMode="row"
