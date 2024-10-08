@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -8,6 +8,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   GridRowsProp,
   GridRowModesModel,
@@ -104,14 +105,16 @@ export default function DataTable() {
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
   );
+  const [loading, setLoading] = useState(true);
   const { authToken } = useAuth();
 
-  //запрос на получение данных
   useEffect(() => {
     if (!authToken) {
       console.error("No auth token found!");
       return;
     }
+
+    setLoading(true);
     axios
       .get(
         "https://test.v5.pryaniky.com/ru/data/v3/testmethods/docs/userdocs/get",
@@ -127,6 +130,9 @@ export default function DataTable() {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [authToken]);
 
@@ -199,9 +205,9 @@ export default function DataTable() {
   };
 
   //Запрос на изменение данных
-  const processRowUpdate = (newRow: GridRowModel) => {
-    return axios
-      .post(
+  const processRowUpdate = async (newRow: GridRowModel) => {
+    try {
+      const response = await axios.post(
         `https://test.v5.pryaniky.com/ru/data/v3/testmethods/docs/userdocs/set/${newRow.id}`,
         { ...newRow, isNew: false },
         {
@@ -209,18 +215,17 @@ export default function DataTable() {
             "x-auth": authToken,
           },
         }
-      )
-      .then((response) => {
-        console.log("Record updated:", response.status);
-        return { ...newRow, isNew: false };
-      })
-      .catch((error) => {
-        console.error(
-          "Error updating record:",
-          error.response ? error.response.data : error.message
-        );
-        throw error;
-      });
+      );
+
+      console.log("Record updated:", response.status);
+      return { ...newRow, isNew: false };
+    } catch (error: any) {
+      console.error(
+        "Error updating record:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
+    }
   };
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
@@ -347,17 +352,35 @@ export default function DataTable() {
         "& .textPrimary": { color: "text.primary" },
       }}
     >
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        editMode="row"
-        rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
-        processRowUpdate={processRowUpdate}
-        slots={{ toolbar: EditToolbar as GridSlots["toolbar"] }}
-        slotProps={{ toolbar: { setRows, setRowModesModel, authToken } }}
-      />
+      {loading && (
+        <Box
+          sx={{
+            position: "absolute",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+        >
+          <CircularProgress size={120} />
+        </Box>
+      )}
+      {!loading && (
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          editMode="row"
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          slots={{ toolbar: EditToolbar as GridSlots["toolbar"] }}
+          slotProps={{ toolbar: { setRows, setRowModesModel, authToken } }}
+        />
+      )}
     </Box>
   );
 }
