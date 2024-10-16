@@ -5,3 +5,19 @@
     padding-left: 2rem;
     padding-right: 2rem;
   }
+
+  @media (max-width: 600px) {
+    .MuiDataGrid-cell {
+      white-space: normal;
+      word-wrap: break-word;  /* Текст будет переноситься на новую строку */
+      min-width: 150px;       /* Минимальная ширина ячейки */
+    }
+  }
+
+  @media (max-width: 600px) {
+    .MuiDataGrid-columnHeader {
+      white-space: normal;
+      word-wrap: break-word !important;  /* Разрешить перенос текста */
+      line-height: 1.2;       /* Регулировка межстрочного интервала */
+    }
+  }

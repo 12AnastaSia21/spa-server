@@ -236,7 +236,13 @@ export default function DataTable() {
     {
       field: "companySigDate",
       headerName: "Дата создания компании",
+      renderHeader: () => (
+        <div style={{ whiteSpace: "normal", wordWrap: "break-word", textAlign: "left" }}>
+          Дата создания компании
+        </div>
+      ),
       flex: 12,
+      minWidth: 150,
       valueGetter: (params) => new Date(params).toISOString(),
       type: "string",
       align: "left",
@@ -246,6 +252,12 @@ export default function DataTable() {
     {
       field: "companySignatureName",
       headerName: "Название компании",
+      renderHeader: () => (
+        <div style={{ whiteSpace: "normal", wordWrap: "break-word", textAlign: "left" }}>
+          Название компании
+        </div>
+      ),
+      minWidth: 200,
       flex: 12,
       align: "left",
       headerAlign: "left",
@@ -254,6 +266,12 @@ export default function DataTable() {
     {
       field: "documentName",
       headerName: "Название документа",
+      renderHeader: () => (
+        <div style={{ whiteSpace: "normal", wordWrap: "break-word", textAlign: "left" }}>
+          Название документа
+        </div>
+      ),
+      minWidth: 200,
       flex: 12,
       align: "left",
       headerAlign: "left",
@@ -262,6 +280,12 @@ export default function DataTable() {
     {
       field: "documentStatus",
       headerName: "Статус документа",
+      renderHeader: () => (
+        <div style={{ whiteSpace: "normal", wordWrap: "break-word", textAlign: "left" }}>
+          Статус документа
+        </div>
+      ),
+      minWidth: 150,
       flex: 12,
       align: "left",
       headerAlign: "left",
@@ -270,6 +294,12 @@ export default function DataTable() {
     {
       field: "documentType",
       headerName: "Тип документа",
+      renderHeader: () => (
+        <div style={{ whiteSpace: "normal", wordWrap: "break-word", textAlign: "left" }}>
+          Тип документа
+        </div>
+      ),
+      minWidth: 150,
       flex: 12,
       align: "left",
       headerAlign: "left",
@@ -278,6 +308,12 @@ export default function DataTable() {
     {
       field: "employeeNumber",
       headerName: "Номер сотрудника",
+      renderHeader: () => (
+        <div style={{ whiteSpace: "normal", wordWrap: "break-word", textAlign: "left" }}>
+          Номер сотрудника
+        </div>
+      ),
+      minWidth: 150,
       flex: 12,
       align: "left",
       headerAlign: "left",
@@ -286,8 +322,14 @@ export default function DataTable() {
     {
       field: "employeeSigDate",
       headerName: "Дата регистрации сотрудника",
+      renderHeader: () => (
+        <div style={{ whiteSpace: "normal", wordWrap: "break-word", textAlign: "left" }}>
+          Дата регистрации сотрудника
+        </div>
+      ),
       valueGetter: (params) => new Date(params).toISOString(),
       type: "string",
+      minWidth: 200,
       flex: 12,
       align: "left",
       headerAlign: "left",
@@ -296,7 +338,13 @@ export default function DataTable() {
     {
       field: "employeeSignatureName",
       headerName: "Подпись сотрудника",
+      renderHeader: () => (
+        <div style={{ whiteSpace: "normal", wordWrap: "break-word", textAlign: "left" }}>
+          Подпись сотрудника
+        </div>
+      ),
       flex: 12,
+      minWidth: 150,
       align: "left",
       headerAlign: "left",
       editable: true,
@@ -306,6 +354,7 @@ export default function DataTable() {
       type: "actions",
       headerName: "Действие",
       flex: 4,
+      minWidth: 100,
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
@@ -379,6 +428,12 @@ export default function DataTable() {
           processRowUpdate={processRowUpdate}
           slots={{ toolbar: EditToolbar as GridSlots["toolbar"] }}
           slotProps={{ toolbar: { setRows, setRowModesModel, authToken } }}
+          sx={{
+            "& .MuiDataGrid-cell": {
+              whiteSpace: "normal",
+              wordWrap: "break-word",  // Разрешить перенос текста
+            },
+          }}
         />
       )}
     </Box>
