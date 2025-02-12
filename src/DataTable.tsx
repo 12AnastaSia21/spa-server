@@ -21,7 +21,7 @@ import {
   GridRowId,
   GridRowModel,
   GridRowEditStopReasons,
-  GridSlots,
+  GridToolbarProps,
 } from "@mui/x-data-grid";
 import { randomId } from "@mui/x-data-grid-generator";
 import { useAuth } from "./TokenContext";
@@ -35,8 +35,10 @@ interface EditToolbarProps {
   authToken: string;
 }
 
+interface CombinedToolbarProps extends EditToolbarProps, GridToolbarProps {}
+
 //Добавление новой записи в таблицу
-function EditToolbar(props: EditToolbarProps) {
+function EditToolbar(props: CombinedToolbarProps) {
   const { setRows, setRowModesModel, authToken } = props;
 
   const handleClick = () => {
@@ -120,7 +122,7 @@ export default function DataTable() {
         "https://test.v5.pryaniky.com/ru/data/v3/testmethods/docs/userdocs/get",
         {
           headers: {
-            "x-auth": authToken,
+            "x-auth": authToken as string,
           },
         }
       )
@@ -426,8 +428,15 @@ export default function DataTable() {
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
-          slots={{ toolbar: EditToolbar as GridSlots["toolbar"] }}
-          slotProps={{ toolbar: { setRows, setRowModesModel, authToken } }}
+          slots={{
+            toolbar: () => (
+              <EditToolbar 
+                setRows={setRows} 
+                setRowModesModel={setRowModesModel} 
+                authToken={authToken ?? ""} // если null, передаем пустую строку
+              />
+            ),
+          }}
           sx={{
             "& .MuiDataGrid-cell": {
               whiteSpace: "normal",
